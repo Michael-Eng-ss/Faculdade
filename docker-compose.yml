@@ -1,0 +1,12 @@
+services:
+  postgres:
+    container_name: pg-projeto-teste
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres2
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: projetoOrientacao2
+    volumes:
+      - ./data:/data/postgres
+    ports:
+      - "5432:5432"
