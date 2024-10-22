@@ -1,17 +1,17 @@
-package manage_db;
+package database;
 
 
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.sql.*;
 
-public class ConectionDB {
+public class DatabaseConnection {
 
     private final String jdbcUrl;
     private final String username;
     private final String password;
 
-    public ConectionDB() {
+    public DatabaseConnection() {
 
         Dotenv dotenv = Dotenv.load();
 
