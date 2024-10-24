@@ -3,29 +3,30 @@ package manage_model;
 import java.util.Date;
 
 public class Pedido {
-
     private int id;
     private int numero;
     private int idUsuario;
-    private Date dtinsercao;
+    private Date dtInsercao;
     private double total;
     private boolean status;
-
-    public Pedido(int id, int numero, int idUsuario, Date dtinsercao, double total, boolean status) {
-        this.id = id;
-        this.numero = numero;
-        this.idUsuario = idUsuario;
-        this.dtinsercao = dtinsercao;
-        this.total = total;
-        this.status = status;
-    }
 
     public Pedido(int numero, int idUsuario, double total) {
         this.numero = numero;
         this.idUsuario = idUsuario;
         this.total = total;
+        this.status = true;
     }
 
+    public Pedido(int id, int numero, int idUsuario, Date dtInsercao, double total, boolean status) {
+        this.id = id;
+        this.numero = numero;
+        this.idUsuario = idUsuario;
+        this.dtInsercao = dtInsercao;
+        this.total = total;
+        this.status = status;
+    }
+
+    // Getters e Setters
     public int getId() {
         return id;
     }
@@ -50,12 +51,12 @@ public class Pedido {
         this.idUsuario = idUsuario;
     }
 
-    public Date getDtinsercao() {
-        return dtinsercao;
+    public Date getDtInsercao() {
+        return dtInsercao;
     }
 
-    public void setDtinsercao(Date dtinsercao) {
-        this.dtinsercao = dtinsercao;
+    public void setDtInsercao(Date dtInsercao) {
+        this.dtInsercao = dtInsercao;
     }
 
     public double getTotal() {
@@ -66,7 +67,7 @@ public class Pedido {
         this.total = total;
     }
 
-    public boolean getStatus() {
+    public boolean isStatus() {
         return status;
     }
 
@@ -76,13 +77,7 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return "Pedido{" +
-                "id=" + id +
-                ", numero=" + numero +
-                ", idUsuario=" + idUsuario +
-                ", dtinsercao=" + dtinsercao +
-                ", total=" + total +
-                ", status=" + status +
-                '}';
+        return "Pedido [id=" + id + ", numero=" + numero + ", idUsuario=" + idUsuario + ", dtInsercao=" + dtInsercao +
+                ", total=" + total + ", status=" + status + "]";
     }
 }

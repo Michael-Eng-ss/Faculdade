@@ -1,3 +1,5 @@
+package manage_service;
+
 import manage_dao.PedidoDAO;
 import manage_model.Pedido;
 
@@ -15,10 +17,11 @@ public class PedidoService {
             System.out.println("\n--- Menu ---");
             System.out.println("1. Cadastrar Pedido");
             System.out.println("2. Consultar Pedido");
-            System.out.println("3. Sair");
+            System.out.println("3. Cancelar Pedido");
+            System.out.println("4. Sair");
             System.out.print("Escolha uma opção: ");
             opcao = scanner.nextInt();
-            scanner.nextLine(); // Consumir a quebra de linha
+            scanner.nextLine();
 
             switch (opcao) {
                 case 1:
@@ -28,19 +31,17 @@ public class PedidoService {
                     consultar(scanner);
                     break;
                 case 3:
+                    cancelar(scanner);
+                    break;
+                case 4:
                     System.out.println("Saindo...");
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
-        } while (opcao != 3);
+        } while (opcao != 4);
 
         scanner.close();
-    }
-
-    private static void inativarProduto(Scanner scanner) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'inativarProduto'");
     }
 
     private static void cadastrar(Scanner scanner) {
@@ -65,5 +66,12 @@ public class PedidoService {
         } else {
             System.out.println("Pedido com ID " + id + " não encontrado.");
         }
+    }
+
+    private static void cancelar(Scanner scanner) {
+        System.out.print("Digite o ID do Pedido que deseja cancelar: ");
+        int idPedido = scanner.nextInt();
+
+        pedidoDAO.cancelarPedido(idPedido);
     }
 }

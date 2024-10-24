@@ -13,7 +13,6 @@ public class PedidoDAO implements GenericDAO<Pedido> {
     public PedidoDAO() {
         databaseConnection = new DatabaseConnection();
 
-        // Criação da tabela 'pedido' se não existir
         try (Connection conn = databaseConnection.getConnection()) {
             String sqlCreateTable = """
                 CREATE TABLE IF NOT EXISTS pedido (
@@ -24,7 +23,7 @@ public class PedidoDAO implements GenericDAO<Pedido> {
                     total real not null,
                     status boolean not null default true,
                     foreign key (id_usuario) references usuario(id) ON DELETE CASCADE
-                ); """;
+                );""";
             Statement stmt = conn.createStatement();
             stmt.execute(sqlCreateTable);
         } catch (SQLException e) {
@@ -39,7 +38,6 @@ public class PedidoDAO implements GenericDAO<Pedido> {
         try (Connection conn = databaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sqlInsert)) {
 
-            // Valida se o usuário existe antes de tentar cadastrar o pedido
             checksExistUsuario(pedido.getIdUsuario());
 
             pstmt.setInt(1, pedido.getNumero());
@@ -51,12 +49,9 @@ public class PedidoDAO implements GenericDAO<Pedido> {
 
         } catch (SQLException e) {
             System.out.println("Erro ao cadastrar pedido: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.out.println("Erro de validação: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Erro inesperado: " + e.getMessage());
         }
     }
+
 
     @Override
     public Pedido get(int id) {
@@ -69,13 +64,14 @@ public class PedidoDAO implements GenericDAO<Pedido> {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                // Utiliza o novo construtor completo
                 return new Pedido(
                         rs.getInt("id"),
                         rs.getInt("numero"),
                         rs.getInt("id_usuario"),
-                        rs.getDate("dtinsercao"),
+                        rs.getDate("dtinsercao"),  // Pega a data de inserção
                         rs.getDouble("total"),
-                        rs.getBoolean("status")
+                        rs.getBoolean("status")   // Pega o status do pedido
                 );
             }
 
@@ -83,40 +79,78 @@ public class PedidoDAO implements GenericDAO<Pedido> {
             System.out.println("Erro ao consultar o pedido: " + e.getMessage());
         }
 
-        return null;
+        return null;  // Retorna null se não encontrar o pedido
     }
+
 
     @Override
     public void update(int id, Pedido pedido) {
+
+        if (pedido == null) {
+            throw new IllegalArgumentException("O pedido fornecido é inválido (null).");
+        }
+
         String sqlUpdate = "UPDATE pedido SET numero = ?, id_usuario = ?, total = ?, status = ? WHERE id = ?";
 
-        try (Connection conn = databaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sqlUpdate)) {
+        try (Connection conn = databaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
 
-            // Valida se o usuário existe antes de tentar atualizar o pedido
-            checksExistUsuario(pedido.getIdUsuario());
+            try (PreparedStatement pstmt = conn.prepareStatement(sqlUpdate)) {
 
-            pstmt.setInt(1, pedido.getNumero());
-            pstmt.setInt(2, pedido.getIdUsuario());
-            pstmt.setDouble(3, pedido.getTotal());
-            pstmt.setBoolean(4, pedido.getStatus());
-            pstmt.setInt(5, id);
+                // Valida se o usuário existe antes de tentar atualizar o pedido
+                checksExistUsuario(pedido.getIdUsuario());
 
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("Pedido atualizado com sucesso!");
-            } else {
-                System.out.println("Nenhum pedido encontrado com o ID especificado.");
+                // Preenche os parâmetros da query
+                pstmt.setInt(1, pedido.getNumero());
+                pstmt.setInt(2, pedido.getIdUsuario());
+                pstmt.setDouble(3, pedido.getTotal());
+                pstmt.setBoolean(4, pedido.isStatus());
+                pstmt.setInt(5, id);
+
+                int affectedRows = pstmt.executeUpdate();
+                if (affectedRows > 0) {
+                    System.out.println("Pedido atualizado com sucesso!");
+                } else {
+                    System.out.println("Nenhum pedido encontrado com o ID especificado.");
+                }
+
+                conn.commit();
+
+            } catch (SQLException e) {
+                conn.rollback();
+                System.out.println("Erro ao atualizar pedido (transação revertida): " + e.getMessage());
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao atualizar pedido: " + e.getMessage());
+            System.out.println("Erro de conexão ao banco de dados: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             System.out.println("Erro de validação: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Erro inesperado: " + e.getMessage());
         }
     }
+
+
+    public void cancelarPedido(int idPedido) {
+        String sqlUpdateStatus = "UPDATE pedido SET status = false WHERE id = ?";
+
+        try (Connection conn = databaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlUpdateStatus)) {
+
+            pstmt.setInt(1, idPedido);
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Pedido cancelado com sucesso!");
+            } else {
+                System.out.println("Pedido não encontrado.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao cancelar o pedido: " + e.getMessage());
+        }
+    }
+
 
     @Override
     public void delete(int id) {
@@ -139,7 +173,6 @@ public class PedidoDAO implements GenericDAO<Pedido> {
         }
     }
 
-    // Verifica se o usuário existe no banco de dados
     public void checksExistUsuario(int id) throws IllegalArgumentException {
         UsuarioDAO usuarioDAO = new UsuarioDAO();
         Usuario usuario = usuarioDAO.get(id);
