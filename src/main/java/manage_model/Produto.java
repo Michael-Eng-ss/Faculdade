@@ -4,16 +4,26 @@ public class Produto {
     private int id;
     private String nome;
     private double preco;
+    private boolean status;
 
-    public Produto(int id, String nome, double preco) {
+    public Produto(String nome, double preco) {
         this.id = id;
+        this.nome = nome;
+        this.preco = preco;
+        this.status = true;
+    }
+
+    public Produto(String nome, double preco, int status) {
         this.nome = nome;
         this.preco = preco;
     }
 
-    public Produto(String nome, double preco) {
-        this.nome = nome;
-        this.preco = preco;
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public int getId() {
@@ -30,6 +40,6 @@ public class Produto {
 
     @Override
     public String toString() {
-        return "Produto [ID=" + id + ", Nome=" + nome + ", Preço=" + preco + "]";
+        return "Produto [ID=" + id + ", Nome=" + nome + ", Preço=" + preco + ", Status=" + status + "]";
     }
 }
