@@ -3,11 +3,13 @@ package manage_model;
 public class Produto {
     private int id;
     private String nome;
+    private String marca;
     private double preco;
     private boolean status;
 
-    public Produto(String nome, double preco) {
+    public Produto(String nome, double preco,String marca) {
         this.id = id;
+        this.marca = marca;
         this.nome = nome;
         this.preco = preco;
         this.status = true;
@@ -17,6 +19,10 @@ public class Produto {
         this.nome = nome;
         this.preco = preco;
     }
+
+    public String getMarca() {return marca;}
+
+    public void setMarca(String marca) {this.marca = marca;}
 
     public boolean isStatus() {
         return status;
@@ -40,6 +46,6 @@ public class Produto {
 
     @Override
     public String toString() {
-        return "Produto [ID=" + id + ", Nome=" + nome + ", Preço=" + preco + ", Status=" + status + "]";
+        return "Produto [ID=" + id + ", Nome=" + nome + ", Preço=" + preco + ", Status=" + status + ", Marca=" + marca + "]";
     }
 }
