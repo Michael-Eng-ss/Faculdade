@@ -36,6 +36,7 @@ public class ProdutoDAO implements GenericDAO<Produto>{
 
             pstmt.setString(1, produto.getNome());
             pstmt.setDouble(2, produto.getPreco());
+            pstmt.setString(3, produto.getMarca());
             pstmt.executeUpdate();
 
             System.out.println("Produto cadastrado com sucesso!");
@@ -46,8 +47,6 @@ public class ProdutoDAO implements GenericDAO<Produto>{
             System.out.println("Código SQLState: " + e.getSQLState());
             System.out.println("Código de erro: " + e.getErrorCode());
 
-            // Opcional: lançar a exceção se quiser tratar em outro nível
-            // throw new RuntimeException("Erro ao cadastrar produto", e);
         }
     }
 
@@ -61,7 +60,7 @@ public class ProdutoDAO implements GenericDAO<Produto>{
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                return new Produto(rs.getString("nome"), rs.getDouble("preco"));
+                return new Produto(rs.getString("nome"), rs.getDouble("preco"),rs.getString(" marca"));
             }
         } catch (SQLException e) {
             System.out.println("Erro ao consultar produto: " + e.getMessage());
@@ -80,6 +79,7 @@ public class ProdutoDAO implements GenericDAO<Produto>{
             // Define os parâmetros da query
             pstmt.setString(1, produto.getNome());
             pstmt.setDouble(2, produto.getPreco());
+            pstmt.setString(3, produto.getMarca());
             pstmt.setInt(3, id);
 
             // Executa a atualização
@@ -100,10 +100,9 @@ public class ProdutoDAO implements GenericDAO<Produto>{
         try (Connection conn = databaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sqlUpdate)) {
 
-            // Define o parâmetro da query
             pstmt.setInt(1, id);
 
-            // Executa a query
+
             pstmt.executeUpdate();
 
             System.out.println("Produto desativado com sucesso!");
